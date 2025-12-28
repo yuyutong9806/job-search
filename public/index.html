@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>秋招信息汇总 - Campus Recruitment Hub</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- 导航栏 -->
+        <nav class="navbar">
+            <div class="navbar-content">
+                <div class="logo">
+                    <h1>🎓 秋招信息汇总</h1>
+                </div>
+                <ul class="nav-menu">
+                    <li><a href="#home" class="nav-link active" data-section="home">首页</a></li>
+                    <li><a href="#companies" class="nav-link" data-section="companies">公司列表</a></li>
+                    <li><a href="#timeline" class="nav-link" data-section="timeline">时间表</a></li>
+                    <li><a href="#favorites" class="nav-link" data-section="favorites">我的收藏</a></li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- 主内容区域 -->
+        <main class="main-content">
+            <!-- 首页部分 -->
+            <section id="home" class="section active">
+                <div class="hero">
+                    <h2>欢迎来到秋招信息汇总平台</h2>
+                    <p>一站式掌握最新的秋季招聘信息</p>
+                    <button class="btn btn-primary" onclick="navigateTo('companies')">浏览公司</button>
+                </div>
+                
+                <div class="stats">
+                    <div class="stat-card">
+                        <h3 id="totalCompanies">0</h3>
+                        <p>招聘中的公司</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3 id="totalPositions">0</h3>
+                        <p>开放职位</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3 id="totalFavorites">0</h3>
+                        <p>我的收藏</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 公司列表部分 -->
+            <section id="companies" class="section">
+                <div class="section-header">
+                    <h2>公司列表</h2>
+                    <div class="search-filter">
+                        <input 
+                            type="text" 
+                            id="searchInput" 
+                            class="search-box" 
+                            placeholder="搜索公司名称或职位..."
+                        >
+                        <select id="filterSelect" class="filter-select">
+                            <option value="">全部行业</option>
+                            <option value="互联网">互联网</option>
+                            <option value="金融">金融</option>
+                            <option value="电子">电子/硬件</option>
+                            <option value="通信">通信</option>
+                            <option value="汽车">汽车</option>
+                            <option value="消费">消费品</option>
+                            <option value="医疗">医疗/制药</option>
+                            <option value="其他">其他</option>
+                        </select>
+                        <button id="addCompanyBtn" class="btn btn-secondary">+ 添加公司</button>
+                    </div>
+                </div>
+                
+                <div id="companiesList" class="companies-grid">
+                    <!-- 公司卡片将动态生成 -->
+                </div>
+            </section>
+
+            <!-- 时间表部分 -->
+            <section id="timeline" class="section">
+                <div class="section-header">
+                    <h2>招聘时间表</h2>
+                </div>
+                
+                <div id="timelineList" class="timeline-list">
+                    <!-- 时间表项将动态生成 -->
+                </div>
+            </section>
+
+            <!-- 收藏部分 -->
+            <section id="favorites" class="section">
+                <div class="section-header">
+                    <h2>我的收藏</h2>
+                    <button id="clearFavoritesBtn" class="btn btn-danger">清空收藏</button>
+                </div>
+                
+                <div id="favoritesList" class="companies-grid">
+                    <!-- 收藏的公司将动态生成 -->
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- 模态框 -->
+    <div id="companyModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <form id="companyForm">
+                <h2>添加新公司</h2>
+                <div class="form-group">
+                    <label for="companyName">公司名称</label>
+                    <input type="text" id="companyName" required>
+                </div>
+                <div class="form-group">
+                    <label for="companyIndustry">行业</label>
+                    <select id="companyIndustry" required>
+                        <option value="">选择行业</option>
+                        <option value="互联网">互联网</option>
+                        <option value="金融">金融</option>
+                        <option value="电子">电子/硬件</option>
+                        <option value="通信">通信</option>
+                        <option value="汽车">汽车</option>
+                        <option value="消费">消费品</option>
+                        <option value="医疗">医疗/制药</option>
+                        <option value="其他">其他</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="companyPositions">开放职位</label>
+                    <input type="text" id="companyPositions" placeholder="如：Java开发工程师, 产品经理">
+                </div>
+                <div class="form-group">
+                    <label for="companyDeadline">截止日期</label>
+                    <input type="date" id="companyDeadline">
+                </div>
+                <div class="form-group">
+                    <label for="companyLink">职位链接</label>
+                    <input type="url" id="companyLink" placeholder="https://...">
+                </div>
+                <div class="form-group">
+                    <label for="companyNotes">备注</label>
+                    <textarea id="companyNotes" rows="3" placeholder="输入任何备注信息..."></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">保存</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/script.js"></script>
+</body>
+</html>

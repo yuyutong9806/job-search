@@ -1,0 +1,17 @@
+{
+  "name": "recruitment-hub",
+  "version": "1.0.0",
+  "description": "秋招信息汇总网站 - Campus Recruitment Hub",
+  "scripts": {
+    "dev": "python3 -m http.server 8000 --directory public",
+    "start": "npm run dev"
+  },
+  "keywords": [
+    "recruitment",
+    "campus",
+    "job-search",
+    "秋招"
+  ],
+  "author": "",
+  "license": "MIT"
+}
