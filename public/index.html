@@ -3,149 +3,215 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>秋招信息汇总 - Campus Recruitment Hub</title>
+    <title>求职方舟AI · 26届秋招官网信息汇总表</title>
     <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-    <div class="container">
-        <!-- 导航栏 -->
-        <nav class="navbar">
-            <div class="navbar-content">
-                <div class="logo">
-                    <h1>🎓 秋招信息汇总</h1>
-                </div>
-                <ul class="nav-menu">
-                    <li><a href="#home" class="nav-link active" data-section="home">首页</a></li>
-                    <li><a href="#companies" class="nav-link" data-section="companies">公司列表</a></li>
-                    <li><a href="#timeline" class="nav-link" data-section="timeline">时间表</a></li>
-                    <li><a href="#favorites" class="nav-link" data-section="favorites">我的收藏</a></li>
-                </ul>
+    <!-- 顶部导航 -->
+    <nav class="navbar">
+        <div class="navbar-content">
+            <div class="logo">
+                <span class="logo-icon">⛵</span>
+                <span class="logo-text">求职方舟AI</span>
             </div>
-        </nav>
+            <ul class="nav-menu">
+                <li><a href="#" class="nav-link">AI填简历</a></li>
+                <li><a href="#" class="nav-link">AI找工作</a></li>
+                <li><a href="#" class="nav-link">AI改简历</a></li>
+                <li><a href="#" class="nav-link">AI笔面试</a></li>
+                <li><a href="#" class="nav-link active">网申表格</a></li>
+            </ul>
+            <div class="nav-auth">
+                <button class="btn-login">登录 / 注册</button>
+            </div>
+        </div>
+    </nav>
 
-        <!-- 主内容区域 -->
-        <main class="main-content">
-            <!-- 首页部分 -->
-            <section id="home" class="section active">
-                <div class="hero">
-                    <h2>欢迎来到秋招信息汇总平台</h2>
-                    <p>一站式掌握最新的秋季招聘信息</p>
-                    <button class="btn btn-primary" onclick="navigateTo('companies')">浏览公司</button>
+    <main class="main-container">
+        <!-- 顶部功能卡片 -->
+        <section class="feature-cards">
+            <div class="card">
+                <div class="card-header">
+                    <h4>制作简历 · 简历诊断</h4>
+                    <span class="tag">免费</span>
                 </div>
-                
-                <div class="stats">
-                    <div class="stat-card">
-                        <h3 id="totalCompanies">0</h3>
-                        <p>招聘中的公司</p>
+                <p>简历不过关，投再多也是白投</p>
+                <button class="btn-card">开始诊断</button>
+            </div>
+            <div class="card">
+                <div class="card-header">
+                    <h4>投简历 · 每日刷岗</h4>
+                    <span class="tag">热门</span>
+                </div>
+                <p>免费网申汇总表，AI实时自动更新</p>
+                <button class="btn-card">前往刷岗</button>
+            </div>
+            <div class="card">
+                <div class="card-header">
+                    <h4>投简历 · 自动网申</h4>
+                    <span class="tag">推荐</span>
+                </div>
+                <p>安装AI填简历插件，投递数先拉起来</p>
+                <button class="btn-card">前往体验</button>
+            </div>
+            <div class="card">
+                <div class="card-header">
+                    <h4>笔面试 · 学霸方案</h4>
+                </div>
+                <p>24小时给你搞到公司岗位备考资料</p>
+                <button class="btn-card">前往查看</button>
+            </div>
+        </section>
+
+        <!-- 主要内容区 -->
+        <section class="content-area">
+            <div class="page-header">
+                <h1>求职方舟AI · 26届秋招官网信息汇总表</h1>
+                <div class="header-actions">
+                    <button id="addCompanyBtn" class="btn-primary">+ 添加信息</button>
+                </div>
+            </div>
+
+            <!-- 筛选区 -->
+            <div class="filter-section">
+                <div class="filter-row">
+                    <span class="filter-label">城市：</span>
+                    <div class="filter-options" id="cityFilters">
+                        <span class="filter-tag active" data-value="">不限</span>
+                        <span class="filter-tag" data-value="北京">北京</span>
+                        <span class="filter-tag" data-value="上海">上海</span>
+                        <span class="filter-tag" data-value="广州">广州</span>
+                        <span class="filter-tag" data-value="深圳">深圳</span>
+                        <span class="filter-tag" data-value="杭州">杭州</span>
+                        <span class="filter-tag" data-value="南京">南京</span>
+                        <span class="filter-tag" data-value="武汉">武汉</span>
+                        <span class="filter-tag" data-value="成都">成都</span>
+                        <span class="filter-tag" data-value="西安">西安</span>
+                        <span class="filter-tag" data-value="重庆">重庆</span>
                     </div>
-                    <div class="stat-card">
-                        <h3 id="totalPositions">0</h3>
-                        <p>开放职位</p>
-                    </div>
-                    <div class="stat-card">
-                        <h3 id="totalFavorites">0</h3>
-                        <p>我的收藏</p>
-                    </div>
                 </div>
-            </section>
-
-            <!-- 公司列表部分 -->
-            <section id="companies" class="section">
-                <div class="section-header">
-                    <h2>公司列表</h2>
-                    <div class="search-filter">
-                        <input 
-                            type="text" 
-                            id="searchInput" 
-                            class="search-box" 
-                            placeholder="搜索公司名称或职位..."
-                        >
-                        <select id="filterSelect" class="filter-select">
-                            <option value="">全部行业</option>
-                            <option value="互联网">互联网</option>
-                            <option value="金融">金融</option>
-                            <option value="电子">电子/硬件</option>
-                            <option value="通信">通信</option>
-                            <option value="汽车">汽车</option>
-                            <option value="消费">消费品</option>
-                            <option value="医疗">医疗/制药</option>
-                            <option value="其他">其他</option>
-                        </select>
-                        <button id="addCompanyBtn" class="btn btn-secondary">+ 添加公司</button>
+                <div class="filter-row">
+                    <span class="filter-label">来源：</span>
+                    <div class="filter-options" id="sourceFilters">
+                        <span class="filter-tag active" data-value="">不限</span>
+                        <span class="filter-tag" data-value="公众号">公众号</span>
+                        <span class="filter-tag" data-value="官网">官网</span>
+                        <span class="filter-tag" data-value="政府">政府</span>
                     </div>
                 </div>
-                
-                <div id="companiesList" class="companies-grid">
-                    <!-- 公司卡片将动态生成 -->
+                <div class="filter-row search-row">
+                    <div class="search-wrapper">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="searchInput" placeholder="搜索公司名称、职位...">
+                    </div>
+                    <div class="checkbox-wrapper">
+                        <input type="checkbox" id="hideAmbassador">
+                        <label for="hideAmbassador">不看校园大使</label>
+                    </div>
                 </div>
-            </section>
+            </div>
 
-            <!-- 时间表部分 -->
-            <section id="timeline" class="section">
-                <div class="section-header">
-                    <h2>招聘时间表</h2>
+            <!-- 数据表格 -->
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th width="80">更新</th>
+                            <th width="150">公司</th>
+                            <th width="100">公告链接</th>
+                            <th width="100">投递链接</th>
+                            <th width="100">行业标签</th>
+                            <th width="80">批次</th>
+                            <th>热门职位</th>
+                            <th width="120">地点</th>
+                            <th width="80">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="companiesList">
+                        <!-- 数据行将通过JS生成 -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="pagination">
+                <span class="page-info">共 <span id="totalCount">0</span> 条信息</span>
+                <div class="page-controls">
+                    <button class="btn-page" disabled>&lt;</button>
+                    <button class="btn-page active">1</button>
+                    <button class="btn-page">2</button>
+                    <button class="btn-page">3</button>
+                    <span class="page-dots">...</span>
+                    <button class="btn-page">&gt;</button>
                 </div>
-                
-                <div id="timelineList" class="timeline-list">
-                    <!-- 时间表项将动态生成 -->
-                </div>
-            </section>
+            </div>
+        </section>
 
-            <!-- 收藏部分 -->
-            <section id="favorites" class="section">
-                <div class="section-header">
-                    <h2>我的收藏</h2>
-                    <button id="clearFavoritesBtn" class="btn btn-danger">清空收藏</button>
-                </div>
-                
-                <div id="favoritesList" class="companies-grid">
-                    <!-- 收藏的公司将动态生成 -->
-                </div>
-            </section>
-        </main>
-    </div>
+        <!-- 底部宣传 -->
+        <section class="promo-footer">
+            <div class="promo-content">
+                <h3>不会挑公司？小风严选5000家大厂</h3>
+                <p>大家都是第一次当应届生找工作，99%的公司没听过很正常。不知道怎么找好公司，更怕误入垃圾公司！</p>
+                <p>求职方舟的公司均出自小风严选！11年校招从业经验，帮你精心挑选：各行业一梯队、上市企业、500强、国央企。</p>
+            </div>
+        </section>
+    </main>
 
-    <!-- 模态框 -->
+    <footer class="site-footer">
+        <div class="footer-content">
+            <p>求职方舟 © 2019-2025 武汉百魔方文化传媒有限公司 | 鄂ICP备2022015654号-6</p>
+        </div>
+    </footer>
+
+    <!-- 添加/编辑模态框 -->
     <div id="companyModal" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>
+            <h2 id="modalTitle">添加招聘信息</h2>
             <form id="companyForm">
-                <h2>添加新公司</h2>
-                <div class="form-group">
-                    <label for="companyName">公司名称</label>
-                    <input type="text" id="companyName" required>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>公司名称</label>
+                        <input type="text" id="companyName" required>
+                    </div>
+                    <div class="form-group">
+                        <label>行业标签</label>
+                        <select id="companyIndustry">
+                            <option value="互联网">互联网</option>
+                            <option value="国企">国企</option>
+                            <option value="事业单位">事业单位</option>
+                            <option value="民营">民营</option>
+                            <option value="外企">外企</option>
+                            <option value="金融">金融</option>
+                            <option value="教育">教育</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>招聘批次</label>
+                        <input type="text" id="companyBatch" placeholder="如：26秋招">
+                    </div>
+                    <div class="form-group">
+                        <label>工作地点</label>
+                        <input type="text" id="companyLocation" placeholder="多个地点用逗号分隔">
+                    </div>
                 </div>
                 <div class="form-group">
-                    <label for="companyIndustry">行业</label>
-                    <select id="companyIndustry" required>
-                        <option value="">选择行业</option>
-                        <option value="互联网">互联网</option>
-                        <option value="金融">金融</option>
-                        <option value="电子">电子/硬件</option>
-                        <option value="通信">通信</option>
-                        <option value="汽车">汽车</option>
-                        <option value="消费">消费品</option>
-                        <option value="医疗">医疗/制药</option>
-                        <option value="其他">其他</option>
-                    </select>
+                    <label>热门职位</label>
+                    <textarea id="companyPositions" rows="3" placeholder="输入职位信息..."></textarea>
                 </div>
-                <div class="form-group">
-                    <label for="companyPositions">开放职位</label>
-                    <input type="text" id="companyPositions" placeholder="如：Java开发工程师, 产品经理">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>公告链接</label>
+                        <input type="url" id="companyNoticeLink">
+                    </div>
+                    <div class="form-group">
+                        <label>投递链接</label>
+                        <input type="url" id="companyApplyLink">
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="companyDeadline">截止日期</label>
-                    <input type="date" id="companyDeadline">
-                </div>
-                <div class="form-group">
-                    <label for="companyLink">职位链接</label>
-                    <input type="url" id="companyLink" placeholder="https://...">
-                </div>
-                <div class="form-group">
-                    <label for="companyNotes">备注</label>
-                    <textarea id="companyNotes" rows="3" placeholder="输入任何备注信息..."></textarea>
-                </div>
-                <button type="submit" class="btn btn-primary">保存</button>
+                <button type="submit" class="btn-submit">保存信息</button>
             </form>
         </div>
     </div>

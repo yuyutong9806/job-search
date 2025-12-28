@@ -1,335 +1,230 @@
-// 数据管理
 class RecruitmentApp {
     constructor() {
         this.companies = [];
-        this.favorites = new Set();
+        this.filters = {
+            city: '',
+            source: '',
+            search: '',
+            hideAmbassador: false
+        };
         this.init();
     }
 
     init() {
         this.loadData();
         this.setupEventListeners();
-        this.loadSampleData();
+        if (this.companies.length === 0) {
+            this.loadSampleData();
+        }
         this.render();
     }
 
     setupEventListeners() {
-        // 导航
-        document.querySelectorAll('.nav-link').forEach(link => {
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                this.navigateToSection(link.dataset.section);
-            });
+        // 城市筛选
+        document.getElementById('cityFilters').addEventListener('click', (e) => {
+            if (e.target.classList.contains('filter-tag')) {
+                document.querySelectorAll('#cityFilters .filter-tag').forEach(t => t.classList.remove('active'));
+                e.target.classList.add('active');
+                this.filters.city = e.target.dataset.value;
+                this.render();
+            }
         });
 
-        // 搜索和筛选
-        document.getElementById('searchInput').addEventListener('input', () => this.filterCompanies());
-        document.getElementById('filterSelect').addEventListener('change', () => this.filterCompanies());
+        // 来源筛选
+        document.getElementById('sourceFilters').addEventListener('click', (e) => {
+            if (e.target.classList.contains('filter-tag')) {
+                document.querySelectorAll('#sourceFilters .filter-tag').forEach(t => t.classList.remove('active'));
+                e.target.classList.add('active');
+                this.filters.source = e.target.dataset.value;
+                this.render();
+            }
+        });
 
-        // 添加公司按钮
-        document.getElementById('addCompanyBtn').addEventListener('click', () => this.openModal());
+        // 搜索
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            this.filters.search = e.target.value.toLowerCase();
+            this.render();
+        });
 
-        // 模态框
+        // 隐藏校园大使
+        document.getElementById('hideAmbassador').addEventListener('change', (e) => {
+            this.filters.hideAmbassador = e.target.checked;
+            this.render();
+        });
+
+        // 模态框操作
         const modal = document.getElementById('companyModal');
         const closeBtn = document.querySelector('.close');
         const form = document.getElementById('companyForm');
 
-        closeBtn.addEventListener('click', () => this.closeModal());
+        document.getElementById('addCompanyBtn').addEventListener('click', () => {
+            modal.style.display = 'block';
+            form.reset();
+        });
+
+        closeBtn.addEventListener('click', () => modal.style.display = 'none');
         window.addEventListener('click', (e) => {
-            if (e.target === modal) this.closeModal();
+            if (e.target === modal) modal.style.display = 'none';
         });
+
         form.addEventListener('submit', (e) => this.handleAddCompany(e));
-
-        // 清空收藏
-        document.getElementById('clearFavoritesBtn').addEventListener('click', () => {
-            if (confirm('确定要清空所有收藏吗？')) {
-                this.favorites.clear();
-                this.saveData();
-                this.render();
-            }
-        });
-    }
-
-    navigateToSection(section) {
-        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-        document.getElementById(section).classList.add('active');
-
-        document.querySelectorAll('.nav-link').forEach(link => {
-            link.classList.remove('active');
-            if (link.dataset.section === section) {
-                link.classList.add('active');
-            }
-        });
-
-        // 平滑滚动到顶部
-        window.scrollTo(0, 0);
-    }
-
-    openModal() {
-        document.getElementById('companyModal').classList.add('show');
-        document.getElementById('companyForm').reset();
-    }
-
-    closeModal() {
-        document.getElementById('companyModal').classList.remove('show');
     }
 
     handleAddCompany(e) {
         e.preventDefault();
-
         const company = {
             id: Date.now(),
+            updateDate: new Date().toISOString().split('T')[0].slice(5), // MM-DD format
             name: document.getElementById('companyName').value,
             industry: document.getElementById('companyIndustry').value,
+            batch: document.getElementById('companyBatch').value,
+            location: document.getElementById('companyLocation').value,
             positions: document.getElementById('companyPositions').value,
-            deadline: document.getElementById('companyDeadline').value,
-            link: document.getElementById('companyLink').value,
-            notes: document.getElementById('companyNotes').value,
-            addedDate: new Date().toISOString()
+            noticeLink: document.getElementById('companyNoticeLink').value,
+            applyLink: document.getElementById('companyApplyLink').value,
+            source: '官网' // Default source
         };
 
-        this.companies.push(company);
+        this.companies.unshift(company);
         this.saveData();
-        this.closeModal();
-        this.navigateToSection('companies');
+        document.getElementById('companyModal').style.display = 'none';
         this.render();
     }
 
     deleteCompany(id) {
-        if (confirm('确定要删除这个公司信息吗？')) {
+        if (confirm('确定要删除这条信息吗？')) {
             this.companies = this.companies.filter(c => c.id !== id);
-            this.favorites.delete(id);
             this.saveData();
             this.render();
         }
     }
 
-    toggleFavorite(id) {
-        if (this.favorites.has(id)) {
-            this.favorites.delete(id);
-        } else {
-            this.favorites.add(id);
-        }
-        this.saveData();
-        this.render();
-    }
+    getFilteredCompanies() {
+        return this.companies.filter(company => {
+            // 城市筛选
+            if (this.filters.city && !company.location.includes(this.filters.city)) return false;
+            
+            // 来源筛选
+            if (this.filters.source && company.source !== this.filters.source) return false;
+            
+            // 搜索筛选
+            if (this.filters.search) {
+                const searchContent = (company.name + company.positions).toLowerCase();
+                if (!searchContent.includes(this.filters.search)) return false;
+            }
 
-    filterCompanies() {
-        const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-        const industryFilter = document.getElementById('filterSelect').value;
+            // 隐藏校园大使
+            if (this.filters.hideAmbassador && company.positions.includes('校园大使')) return false;
 
-        const filtered = this.companies.filter(company => {
-            const matchesSearch = company.name.toLowerCase().includes(searchTerm) ||
-                                  company.positions.toLowerCase().includes(searchTerm);
-            const matchesIndustry = !industryFilter || company.industry === industryFilter;
-            return matchesSearch && matchesIndustry;
+            return true;
         });
-
-        this.renderCompaniesList(filtered);
-    }
-
-    renderCompaniesList(companies = this.companies) {
-        const container = document.getElementById('companiesList');
-
-        if (companies.length === 0) {
-            container.innerHTML = `
-                <div class="empty-state" style="grid-column: 1/-1;">
-                    <h3>还没有公司信息</h3>
-                    <p>点击"+ 添加公司"按钮添加你感兴趣的公司</p>
-                </div>
-            `;
-            return;
-        }
-
-        container.innerHTML = companies.map(company => `
-            <div class="company-card">
-                <div class="company-header">
-                    <span class="company-name">${company.name}</span>
-                    <span class="company-badge">${company.industry}</span>
-                </div>
-                <div class="company-info">
-                    ${new Date(company.addedDate).toLocaleDateString('zh-CN')}
-                </div>
-                ${company.positions ? `
-                    <div class="company-positions">
-                        <strong>职位：</strong>
-                        ${company.positions}
-                    </div>
-                ` : ''}
-                ${company.deadline ? `
-                    <div class="company-deadline">
-                        ⏰ 截止：${new Date(company.deadline).toLocaleDateString('zh-CN')}
-                    </div>
-                ` : ''}
-                ${company.notes ? `
-                    <div class="company-info" style="margin-bottom: 15px;">
-                        <strong>备注：</strong> ${company.notes}
-                    </div>
-                ` : ''}
-                <div class="company-actions">
-                    <button 
-                        class="btn-favorite ${this.favorites.has(company.id) ? 'active' : ''}"
-                        onclick="app.toggleFavorite(${company.id})"
-                    >
-                        ${this.favorites.has(company.id) ? '★ 已收藏' : '☆ 收藏'}
-                    </button>
-                    ${company.link ? `
-                        <a href="${company.link}" target="_blank" class="btn btn-open">查看职位</a>
-                    ` : ''}
-                    <button 
-                        class="btn-delete"
-                        onclick="app.deleteCompany(${company.id})"
-                    >
-                        删除
-                    </button>
-                </div>
-            </div>
-        `).join('');
-    }
-
-    renderFavorites() {
-        const favorites = this.companies.filter(c => this.favorites.has(c.id));
-        const container = document.getElementById('favoritesList');
-
-        if (favorites.length === 0) {
-            container.innerHTML = `
-                <div class="empty-state" style="grid-column: 1/-1;">
-                    <h3>还没有收藏任何公司</h3>
-                    <p>在公司列表中点击"☆ 收藏"来添加</p>
-                </div>
-            `;
-            return;
-        }
-
-        this.renderCompaniesList(favorites);
-    }
-
-    renderTimeline() {
-        const container = document.getElementById('timelineList');
-        
-        // 按截止日期排序
-        const sorted = [...this.companies]
-            .filter(c => c.deadline)
-            .sort((a, b) => new Date(a.deadline) - new Date(b.deadline));
-
-        if (sorted.length === 0) {
-            container.innerHTML = `
-                <div class="empty-state">
-                    <h3>还没有截止日期</h3>
-                    <p>添加公司信息时填写截止日期以在时间表中查看</p>
-                </div>
-            `;
-            return;
-        }
-
-        container.innerHTML = sorted.map(company => {
-            const deadline = new Date(company.deadline);
-            const daysLeft = Math.ceil((deadline - new Date()) / (1000 * 60 * 60 * 24));
-            const status = daysLeft < 0 ? '已过期' : (daysLeft === 0 ? '今天截止' : `还剩${daysLeft}天`);
-
-            return `
-                <div class="timeline-item">
-                    <div class="timeline-date">
-                        ${deadline.toLocaleDateString('zh-CN')}
-                    </div>
-                    <div class="timeline-content">
-                        <h3>${company.name}</h3>
-                        <p>${company.positions || '职位未填写'}</p>
-                        <p style="color: ${daysLeft < 0 ? '#e74c3c' : '#3498db'}; font-weight: bold;">
-                            ${status}
-                        </p>
-                    </div>
-                </div>
-            `;
-        }).join('');
-    }
-
-    updateStats() {
-        document.getElementById('totalCompanies').textContent = this.companies.length;
-        document.getElementById('totalPositions').textContent = 
-            this.companies.reduce((sum, c) => sum + (c.positions ? 1 : 0), 0);
-        document.getElementById('totalFavorites').textContent = this.favorites.size;
     }
 
     render() {
-        this.renderCompaniesList();
-        this.renderFavorites();
-        this.renderTimeline();
-        this.updateStats();
+        const filtered = this.getFilteredCompanies();
+        const container = document.getElementById('companiesList');
+        document.getElementById('totalCount').textContent = filtered.length;
+
+        if (filtered.length === 0) {
+            container.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:20px;">暂无数据</td></tr>';
+            return;
+        }
+
+        container.innerHTML = filtered.map(company => `
+            <tr>
+                <td>${company.updateDate}</td>
+                <td style="font-weight:500">${company.name}</td>
+                <td>${company.noticeLink ? `<a href="${company.noticeLink}" target="_blank" class="link-btn">招聘公告</a>` : '-'}</td>
+                <td>${company.applyLink ? `<a href="${company.applyLink}" target="_blank" class="link-btn">投递官网</a>` : '-'}</td>
+                <td><span class="tag-industry">${company.industry}</span></td>
+                <td><span class="tag-batch">${company.batch}</span></td>
+                <td style="font-size:13px;color:#666;max-width:300px;">${company.positions}</td>
+                <td>${company.location}</td>
+                <td>
+                    <button class="action-btn delete" onclick="app.deleteCompany(${company.id})">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </td>
+            </tr>
+        `).join('');
     }
 
     loadSampleData() {
-        // 只在第一次运行时加载示例数据
-        if (this.companies.length === 0) {
-            this.companies = [
-                {
-                    id: 1,
-                    name: 'BATJ (百度、阿里、腾讯、字节)',
-                    industry: '互联网',
-                    positions: 'Java开发工程师, 前端工程师, 产品经理, 运营',
-                    deadline: '2025-10-31',
-                    link: 'https://www.example.com',
-                    notes: '大厂秋招，福利待遇优厚',
-                    addedDate: new Date().toISOString()
-                },
-                {
-                    id: 2,
-                    name: '华为',
-                    industry: '电子/硬件',
-                    positions: '硬件工程师, 软件工程师, 系统工程师',
-                    deadline: '2025-09-30',
-                    link: 'https://www.example.com',
-                    notes: '2025届校招开启',
-                    addedDate: new Date().toISOString()
-                },
-                {
-                    id: 3,
-                    name: '网易',
-                    industry: '互联网',
-                    positions: '游戏开发工程师, 后端开发, 测试工程师',
-                    deadline: '2025-10-15',
-                    link: 'https://www.example.com',
-                    notes: '游戏和音乐方向招聘',
-                    addedDate: new Date().toISOString()
-                },
-                {
-                    id: 4,
-                    name: '美团',
-                    industry: '互联网',
-                    positions: '算法工程师, 后端工程师, 前端工程师',
-                    deadline: '2025-10-20',
-                    link: 'https://www.example.com',
-                    notes: '社区秋招，待遇不错',
-                    addedDate: new Date().toISOString()
-                }
-            ];
-            this.saveData();
-        }
+        this.companies = [
+            {
+                id: 1,
+                updateDate: '12-28',
+                name: '中国金融出版社',
+                industry: '国企',
+                batch: '26秋招',
+                location: '北京',
+                positions: '编辑、财务、行政管理',
+                noticeLink: '#',
+                applyLink: '#',
+                source: '官网'
+            },
+            {
+                id: 2,
+                updateDate: '12-28',
+                name: '汇川技术',
+                industry: '民营',
+                batch: '26秋招',
+                location: '深圳、苏州',
+                positions: '嵌入式软件工程师、硬件工程师、算法工程师',
+                noticeLink: '#',
+                applyLink: '#',
+                source: '官网'
+            },
+            {
+                id: 3,
+                updateDate: '12-28',
+                name: '清华大学图书馆',
+                industry: '事业单位',
+                batch: '26秋招',
+                location: '北京',
+                positions: '图书管理员、信息技术岗',
+                noticeLink: '#',
+                applyLink: '#',
+                source: '官网'
+            },
+            {
+                id: 4,
+                updateDate: '12-27',
+                name: '万兴科技',
+                industry: '互联网',
+                batch: 'offer直通计划',
+                location: '长沙、深圳',
+                positions: '产品经理、C++开发、海外运营',
+                noticeLink: '#',
+                applyLink: '#',
+                source: '官网'
+            },
+            {
+                id: 5,
+                updateDate: '12-27',
+                name: '中国农业科学院',
+                industry: '事业单位',
+                batch: '26秋招',
+                location: '北京',
+                positions: '科研助理、行政管理',
+                noticeLink: '#',
+                applyLink: '#',
+                source: '官网'
+            }
+        ];
+        this.saveData();
     }
 
     saveData() {
-        localStorage.setItem('companies', JSON.stringify(this.companies));
-        localStorage.setItem('favorites', JSON.stringify([...this.favorites]));
+        localStorage.setItem('companies_v2', JSON.stringify(this.companies));
     }
 
     loadData() {
-        const companiesData = localStorage.getItem('companies');
-        const favoritesData = localStorage.getItem('favorites');
-
-        if (companiesData) {
-            this.companies = JSON.parse(companiesData);
-        }
-
-        if (favoritesData) {
-            this.favorites = new Set(JSON.parse(favoritesData));
+        const data = localStorage.getItem('companies_v2');
+        if (data) {
+            this.companies = JSON.parse(data);
         }
     }
 }
 
-// 辅助函数
-function navigateTo(section) {
-    app.navigateToSection(section);
-}
-
-// 初始化应用
 const app = new RecruitmentApp();
